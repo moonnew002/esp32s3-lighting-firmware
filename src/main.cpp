@@ -507,16 +507,15 @@ void setup() {
 }
 
 void loop() {
-  int packetSize = Udp.parsePacket();
-  if (packetSize <= 0) return;
+  while (Udp.parsePacket() > 0) {
+    int len = Udp.read(packetBuffer, MAX_UDP_BUFFER - 1);
+    if (len <= 0) continue;
 
-  int len = Udp.read(packetBuffer, MAX_UDP_BUFFER - 1);
-  if (len <= 0) return;
+    packetBuffer[len] = '\0';
+    String comando = String(packetBuffer);
 
-  packetBuffer[len] = '\0';
-  String comando = String(packetBuffer);
-
-  Serial.print("UDP recibido: ");
-  Serial.println(comando);
-  procesarComando(comando);
+    Serial.print("UDP recibido: ");
+    Serial.println(comando);
+    procesarComando(comando);
+  }
 }
